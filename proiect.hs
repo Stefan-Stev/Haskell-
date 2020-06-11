@@ -15,7 +15,7 @@ badCharacter pattern = execState (st pattern indices) Map.empty where
     indices = [0, 1 .. ((length pattern)-1)]
     lungimepattern = length pattern --ma folosesc de functia de lungime a unui text
     st [x] _         = do lmutare <- get
-                          put (Map.insert x (length lungimepattern) lmutare) --pentru ultimul caracter
+                          put (Map.insert x (length 0) lmutare) --pentru ultimul caracter
     st (x:xs) (y:ys) = do l <- get
                           put (Map.insert x (lungimepattern-y-1) lmutare)   --tot adaug la tabel noi valori imrpeuna cu cheile lor (fiecare char cu shift) 
                           st xs ys
