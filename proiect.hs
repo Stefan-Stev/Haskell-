@@ -5,29 +5,26 @@ import System.Environment
 import qualified Data.ByteString 
 import Data.Text.Internal.Search as S
 
-type Bmtable = Map.Map Char Int
-
-
-pattern_sample1="aaa"
-text_sample1="aaabbaaa"
+type BadMatchTable = Map.Map Char Int
 
 
 
-badCharacter :: String -> Bmtable
-badCharacter p = execState (st p indices) Map.empty where
-    indices = [0, 1 .. (plen-1)]
-    plen = length p --ma folosesc de functia de lungime a unui text
-    st [x] _         = do l <- get
-                          put (Map.insert x (length p) l) --pentru ultimul caracter
+
+badCharacter :: String -> BadMatchTable
+badCharacter pattern = execState (st pattern indices) Map.empty where
+    indices = [0, 1 .. ((length pattern)-1)]
+    lungimepattern = length pattern --ma folosesc de functia de lungime a unui text
+    st [x] _         = do lmutare <- get
+                          put (Map.insert x (length lungimepattern) lmutare) --pentru ultimul caracter
     st (x:xs) (y:ys) = do l <- get
-                          put (Map.insert x (plen-y-1) l)   --tot adaug la tabel noi valori imrpeuna cu cheile lor (fiecare char cu shift) 
+                          put (Map.insert x (lungimepattern-y-1) lmutare)   --tot adaug la tabel noi valori imrpeuna cu cheile lor (fiecare char cu shift) 
                           st xs ys
 --comp ((length pattern)-1) txtpat pattern bmt
 
 
 
-matching :: Int -> String-> String ->Bmtable -> Int 
-matching indice txtpat pattern bmt = case comp indice txtpat pattern bmt of
+asemanare :: Int -> String-> String ->BadMatchTable -> Int 
+asemanare indice txtpat pattern bmt = case eval indice txtpat pattern bmt of
                                      Just val -> val
                                      Nothing -> (-1)
                                         
@@ -35,17 +32,17 @@ matching indice txtpat pattern bmt = case comp indice txtpat pattern bmt of
                                        
                              
 
-comp  :: Int -> String -> String -> Bmtable -> Maybe Int
-comp i txtpat pattern  bmt= case caseEqual txtpat pattern i ((length pattern)-1) bmt of
+eval  :: Int -> String -> String -> BadMatchTable -> Maybe Int
+eval i txtpat pattern  bmt= case caseEqual txtpat pattern i ((length pattern)-1) bmt of
                                   Nothing -> Just (i - length pattern+1)
                                   Just val -> if val >= length txtpat
                                                then Nothing
-                                               else comp val txtpat pattern  bmt
+                                               else eval val txtpat pattern  bmt
 
    
                                                
 
-caseEqual :: String ->String -> Int ->Int ->Bmtable-> Maybe Int
+caseEqual :: String ->String -> Int ->Int ->BadMatchTable-> Maybe Int
 caseEqual text pattern indicet (-1) bmt     = Nothing   
 caseEqual text pattern indicet indicep bmt= if ((text !! indicet)==(pattern !! indicep ))
                                              then caseEqual text pattern (indicet-1) (indicep-1) bmt                                   
@@ -55,7 +52,7 @@ caseEqual text pattern indicet indicep bmt= if ((text !! indicet)==(pattern !! i
      
                                                
 
-algoritm indiceprimar text_sample pattern_sample= matching indiceprimar text_sample pattern_sample (badCharacter pattern_sample)
+algoritm indiceprimar text_sample pattern_sample= asemanare indiceprimar text_sample pattern_sample (badCharacter pattern_sample)
 
 
 
@@ -79,6 +76,8 @@ booyer text pattern = if length pattern >  length text
                       else do
                       let x=algoritm1  ((length pattern)-1) text pattern []
                       x
+pattern_sample1="aaa"
+text_sample1="aaabbaaa"
 
 main :: IO()
 main  = do
