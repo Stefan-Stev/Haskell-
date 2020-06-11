@@ -1,10 +1,9 @@
-import Control.Monad.Trans.State
-import qualified Data.Map.Lazy as Map
 import Data.Array
 import System.Environment
 import qualified Data.ByteString 
 import Data.Text.Internal.Search as S
-
+import Control.Monad.Trans.State
+import qualified Data.Map.Lazy as Map
 type BadMatchTable = Map.Map Char Int
 
 
@@ -15,8 +14,8 @@ badCharacter pattern = execState (st pattern indices) Map.empty where
     indices = [0, 1 .. ((length pattern)-1)]
     lungimepattern = length pattern --ma folosesc de functia de lungime a unui text
     st [x] _         = do lmutare <- get
-                          put (Map.insert x (length 0) lmutare) --pentru ultimul caracter
-    st (x:xs) (y:ys) = do l <- get
+                          put (Map.insert x 0 lmutare) --pentru ultimul caracter
+    st (x:xs) (y:ys) = do lmutare <- get
                           put (Map.insert x (lungimepattern-y-1) lmutare)   --tot adaug la tabel noi valori imrpeuna cu cheile lor (fiecare char cu shift) 
                           st xs ys
 --comp ((length pattern)-1) txtpat pattern bmt
