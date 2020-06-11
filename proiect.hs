@@ -7,10 +7,10 @@ import Data.Text.Internal.Search as S
 
 type Bmtable = Map.Map Char Int
 
---sample
+
 pattern_sample1="aaa"
 text_sample1="aaabbaaa"
---
+
 
 
 badCharacter :: String -> Bmtable
@@ -26,10 +26,10 @@ badCharacter p = execState (st p indices) Map.empty where
 
 
 
-match :: Int -> String-> String ->Bmtable -> Int 
-match indice txtpat pattern bmt = case comp indice txtpat pattern bmt of
-                           Just val -> val
-                           Nothing -> (-1)
+matching :: Int -> String-> String ->Bmtable -> Int 
+matching indice txtpat pattern bmt = case comp indice txtpat pattern bmt of
+                                     Just val -> val
+                                     Nothing -> (-1)
                                         
                                        
                                        
@@ -55,7 +55,7 @@ caseEqual text pattern indicet indicep bmt= if ((text !! indicet)==(pattern !! i
      
                                                
 
-algoritm indiceprimar text_sample pattern_sample= match indiceprimar text_sample pattern_sample (badCharacter pattern_sample)
+algoritm indiceprimar text_sample pattern_sample= matching indiceprimar text_sample pattern_sample (badCharacter pattern_sample)
 
 
 
